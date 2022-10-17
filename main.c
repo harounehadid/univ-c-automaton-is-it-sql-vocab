@@ -4,6 +4,75 @@
 #include <stdbool.h>
 #include <ctype.h>
 
+typedef struct vocabList {
+    char* vocabType;
+    char* vocabWords[];
+}vocabList;
+
+typedef struct automaton {
+    vocabList* vocabularyList;
+}automaton;
+
+
+automaton* feedAutomaton(char* vocabs[]) {
+
+
+    return NULL;
+}
+
+char** createAutomaton() {
+    printf("\nCreating automaton...");
+    automaton* myAutomaton = NULL;
+
+    char* keywordsVocab[7] = {
+        "select",
+        "from",
+        "where",
+        "order",
+        "by",
+        "desc",
+        "asc"
+    };
+
+    myAutomaton = feedAutomaton(keywordsVocab);
+
+    char* vocabulary[100] = {
+        "select",
+        "from",
+        "where",
+        "order",
+        "by",
+        "desc",
+        "asc",
+        ",",
+        "and",
+        "or",
+        "not"
+    };
+
+    // The first word in the vocab array gonna be vocabList's name, example: keywordVocab[0] = "keyword"
+
+    // This variable should be equal to the number of vocabulary variable above
+    // To some limitations this declaration had to be here
+    const int vocabsToAdd = 100;
+
+    char* automaton[vocabsToAdd];
+
+    automaton[0] = "select";
+    automaton[1] = "from";
+    automaton[2] = "where";
+    automaton[3] = "order";
+    automaton[4] = "by";
+    automaton[5] = "desc";
+    automaton[6] = "asc";
+    automaton[7] = ",";
+
+    printf(automaton[0]);
+    printf("\n");
+    printf(automaton[1]);
+
+    return NULL;
+}
 
 char* readFileAndReturnText(char* fileName) {
     FILE* file;
@@ -97,9 +166,12 @@ int main() {
     char* fileName = NULL;
     printf("---------- Welcome ----------------");
     printf("\nEnter the name of the file:  ");
-    scanf("%c", &fileName);
+    
+    // I'll add this later ---------------------------
+    // scanf("%c", &fileName);
+    // printf("File Name is  %s", fileName);
 
-    printf("File Name is  %s", fileName);
+    createAutomaton();
 
     char* fileText = readFileAndReturnText("testing-file.txt");
 
