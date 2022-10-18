@@ -20,26 +20,22 @@ automaton* createNewNode(char* vocabsGroup, char** vocabs, int wordsNum) {
     fflush(stdin);
 
     automaton* newNode = NULL;
-    vocabList* newVoList = NULL;
 
     // The while loop to account for memory allocation failures
     do {
         newNode = malloc(sizeof(automaton));
     
     } while (newNode == NULL);
-
-    do {
-        newVoList = malloc(sizeof(vocabList));
-    
-    } while (newVoList == NULL);
     
     newNode->vocabularyList->vocabGroup = vocabsGroup;
     
+    // Initialize the array of char pointers --------------------------------
     newNode->vocabularyList->vocabWords = malloc(wordsNum * sizeof(char *));
 
     for (int i = 0; i < wordsNum; i++) {
         newNode->vocabularyList->vocabWords[i] = vocabs[i];
     }
+    // ----------------------------------------------------
 
     newNode->next = NULL;
 
@@ -49,12 +45,16 @@ automaton* createNewNode(char* vocabsGroup, char** vocabs, int wordsNum) {
 automaton* addToAutomatonChain(automaton* chain, automaton* node) {
     // To prevent jumping lines
     fflush(stdin);
+    fflush(stdout);
 
     if (chain == NULL) {
+        printf("\nI got here");
         chain = node;
         node = NULL;     
     }
     else {
+        getchar();
+        printf("\nI got here");
         automaton* temp = chain;
 
         while (temp->next != NULL) {
@@ -71,23 +71,21 @@ automaton* addToAutomatonChain(automaton* chain, automaton* node) {
 
 automaton* feedAutomaton(automaton* myAutomaton, char* vocabsGroup, char* vocabs[], int wordsNum) {
     automaton* newNode = createNewNode(vocabsGroup, vocabs, wordsNum);
-
-    // printf("\nFirst word:  %s    last word:  %s", newNode->vocabularyList->vocabWords[0], newNode->vocabularyList->vocabWords[7]);
-
-    // myAutomaton = addToAutomatonChain(myAutomaton, newNode);
-
-    myAutomaton = newNode;
-
-    printf("\nHello01");
-    return newNode;
+    getchar();
+    myAutomaton = addToAutomatonChain(myAutomaton, newNode);
+    
+    return myAutomaton;
 }
 
 automaton* createAutomaton(automaton* myAutomaton) {
-    printf("\nCreating automaton...");
+    printf("\nCreating automaton...\n");
     myAutomaton = NULL;
 
-    char* keywordsVocabGroup = "keyword";
     // There will be errors if you added more vocab without upping array's limit
+    // Getting the number of rows and columns of a matrix would need much more work due to C limitations and since
+    // it's out of scope I'm gonna just use a variable that should be equal to the number of words in the vocab
+    char* keywordsVocabGroup = "keyword";
+    int keywordsVocabNum = 7;
     char* keywordsVocab[7] = {
         "select",
         "from",
@@ -98,9 +96,25 @@ automaton* createAutomaton(automaton* myAutomaton) {
         "asc"
     };
 
-    myAutomaton = feedAutomaton(myAutomaton, keywordsVocabGroup, keywordsVocab, 7);
+    myAutomaton = feedAutomaton(myAutomaton, keywordsVocabGroup, keywordsVocab, keywordsVocabNum);
 
-    myAutomaton == NULL ? printf("\nNULLLLLLL") : printf("\nIt's not");
+    fflush(stdin);
+    fflush(stdout);
+
+    // char* compOpVocabGroup = "comparison operator";
+    // int compOpVocabNum = 6;
+    // char* compOpVocab[6] = {
+    //     "=",
+    //     ">",
+    //     "<",
+    //     ">=",
+    //     "<=",
+    //     "<>"
+    // };
+
+    // myAutomaton = feedAutomaton(myAutomaton, compOpVocabGroup, compOpVocab, compOpVocabNum);
+
+    
 
     return myAutomaton;
 }
@@ -194,7 +208,7 @@ char* readFileAndReturnText(char* fileName) {
 // }
 
 int main() {
-    char* fileName = NULL;
+    char* fileName;
     printf("---------- Welcome ----------------");
     printf("\nEnter the name of the file:  ");
     
@@ -213,9 +227,8 @@ int main() {
     printf("\n  %s", myAutomaton->vocabularyList->vocabWords[4]);
     printf("\n  %s", myAutomaton->vocabularyList->vocabWords[5]);
     printf("\n  %s", myAutomaton->vocabularyList->vocabWords[6]);
-    printf("\n  %s", myAutomaton->vocabularyList->vocabWords[7]);
 
-
+    fflush(stdout);
 
     // char* fileText = readFileAndReturnText("testing-file.txt");
 
