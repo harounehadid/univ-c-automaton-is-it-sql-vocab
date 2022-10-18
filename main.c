@@ -5,25 +5,89 @@
 #include <ctype.h>
 
 typedef struct vocabList {
-    char* vocabType;
-    char* vocabWords[];
+    char* vocabGroup;
+    char** vocabWords;
 }vocabList;
 
 typedef struct automaton {
-    vocabList* vocabularyList;
+    struct vocabList* vocabularyList;
+    struct automaton* next;
 }automaton;
 
 
-automaton* feedAutomaton(char* vocabs[]) {
+automaton* createNewNode(char* vocabsGroup, char** vocabs, int wordsNum) {
+    // To prevent jumpig lines
+    fflush(stdin);
 
+    automaton* newNode = NULL;
+    vocabList* newVoList = NULL;
 
-    return NULL;
+    // The while loop to account for memory allocation failures
+    do {
+        newNode = malloc(sizeof(automaton));
+    
+    } while (newNode == NULL);
+
+    do {
+        newVoList = malloc(sizeof(vocabList));
+    
+    } while (newVoList == NULL);
+    
+    newNode->vocabularyList->vocabGroup = vocabsGroup;
+    
+    newNode->vocabularyList->vocabWords = malloc(wordsNum * sizeof(char *));
+
+    for (int i = 0; i < wordsNum; i++) {
+        newNode->vocabularyList->vocabWords[i] = vocabs[i];
+    }
+
+    newNode->next = NULL;
+
+    return newNode;
 }
 
-char** createAutomaton() {
-    printf("\nCreating automaton...");
-    automaton* myAutomaton = NULL;
+automaton* addToAutomatonChain(automaton* chain, automaton* node) {
+    // To prevent jumping lines
+    fflush(stdin);
 
+    if (chain == NULL) {
+        chain = node;
+        node = NULL;     
+    }
+    else {
+        automaton* temp = chain;
+
+        while (temp->next != NULL) {
+            temp = temp->next;  
+        }
+
+        temp->next = node;
+        temp = NULL;
+        node = NULL;
+    }
+
+    return chain;
+}
+
+automaton* feedAutomaton(automaton* myAutomaton, char* vocabsGroup, char* vocabs[], int wordsNum) {
+    automaton* newNode = createNewNode(vocabsGroup, vocabs, wordsNum);
+
+    // printf("\nFirst word:  %s    last word:  %s", newNode->vocabularyList->vocabWords[0], newNode->vocabularyList->vocabWords[7]);
+
+    // myAutomaton = addToAutomatonChain(myAutomaton, newNode);
+
+    myAutomaton = newNode;
+
+    printf("\nHello01");
+    return newNode;
+}
+
+automaton* createAutomaton(automaton* myAutomaton) {
+    printf("\nCreating automaton...");
+    myAutomaton = NULL;
+
+    char* keywordsVocabGroup = "keyword";
+    // There will be errors if you added more vocab without upping array's limit
     char* keywordsVocab[7] = {
         "select",
         "from",
@@ -34,44 +98,11 @@ char** createAutomaton() {
         "asc"
     };
 
-    myAutomaton = feedAutomaton(keywordsVocab);
+    myAutomaton = feedAutomaton(myAutomaton, keywordsVocabGroup, keywordsVocab, 7);
 
-    char* vocabulary[100] = {
-        "select",
-        "from",
-        "where",
-        "order",
-        "by",
-        "desc",
-        "asc",
-        ",",
-        "and",
-        "or",
-        "not"
-    };
+    myAutomaton == NULL ? printf("\nNULLLLLLL") : printf("\nIt's not");
 
-    // The first word in the vocab array gonna be vocabList's name, example: keywordVocab[0] = "keyword"
-
-    // This variable should be equal to the number of vocabulary variable above
-    // To some limitations this declaration had to be here
-    const int vocabsToAdd = 100;
-
-    char* automaton[vocabsToAdd];
-
-    automaton[0] = "select";
-    automaton[1] = "from";
-    automaton[2] = "where";
-    automaton[3] = "order";
-    automaton[4] = "by";
-    automaton[5] = "desc";
-    automaton[6] = "asc";
-    automaton[7] = ",";
-
-    printf(automaton[0]);
-    printf("\n");
-    printf(automaton[1]);
-
-    return NULL;
+    return myAutomaton;
 }
 
 char* readFileAndReturnText(char* fileName) {
@@ -171,12 +202,25 @@ int main() {
     // scanf("%c", &fileName);
     // printf("File Name is  %s", fileName);
 
-    createAutomaton();
+    automaton* myAutomaton = createAutomaton(myAutomaton);
 
-    char* fileText = readFileAndReturnText("testing-file.txt");
+    fflush(stdout);
 
-    printf("\nFILE TEXT: %s", fileName);
-    printf("\n");
+    printf("\n  %s", myAutomaton->vocabularyList->vocabWords[0]);
+    printf("\n  %s", myAutomaton->vocabularyList->vocabWords[1]);
+    printf("\n  %s", myAutomaton->vocabularyList->vocabWords[2]);
+    printf("\n  %s", myAutomaton->vocabularyList->vocabWords[3]);
+    printf("\n  %s", myAutomaton->vocabularyList->vocabWords[4]);
+    printf("\n  %s", myAutomaton->vocabularyList->vocabWords[5]);
+    printf("\n  %s", myAutomaton->vocabularyList->vocabWords[6]);
+    printf("\n  %s", myAutomaton->vocabularyList->vocabWords[7]);
+
+
+
+    // char* fileText = readFileAndReturnText("testing-file.txt");
+
+    // printf("\nFILE TEXT: %s", fileName);
+    // printf("\n");
 
     printf("\n\n");
 
