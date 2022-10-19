@@ -26,6 +26,11 @@ automaton* createNewNode(char* vocabsGroup, char** vocabs, int wordsNum) {
         newNode = malloc(sizeof(automaton));
     
     } while (newNode == NULL);
+
+    do {
+        newNode->vocabularyList = malloc(sizeof(vocabList));
+    
+    } while (newNode->vocabularyList == NULL);
     
     newNode->vocabularyList->vocabGroup = vocabsGroup;
     
@@ -45,16 +50,12 @@ automaton* createNewNode(char* vocabsGroup, char** vocabs, int wordsNum) {
 automaton* addToAutomatonChain(automaton* chain, automaton* node) {
     // To prevent jumping lines
     fflush(stdin);
-    fflush(stdout);
 
     if (chain == NULL) {
-        printf("\nI got here");
         chain = node;
-        node = NULL;     
+        node = NULL;
     }
     else {
-        getchar();
-        printf("\nI got here");
         automaton* temp = chain;
 
         while (temp->next != NULL) {
@@ -71,7 +72,6 @@ automaton* addToAutomatonChain(automaton* chain, automaton* node) {
 
 automaton* feedAutomaton(automaton* myAutomaton, char* vocabsGroup, char* vocabs[], int wordsNum) {
     automaton* newNode = createNewNode(vocabsGroup, vocabs, wordsNum);
-    getchar();
     myAutomaton = addToAutomatonChain(myAutomaton, newNode);
     
     return myAutomaton;
@@ -101,18 +101,18 @@ automaton* createAutomaton(automaton* myAutomaton) {
     fflush(stdin);
     fflush(stdout);
 
-    // char* compOpVocabGroup = "comparison operator";
-    // int compOpVocabNum = 6;
-    // char* compOpVocab[6] = {
-    //     "=",
-    //     ">",
-    //     "<",
-    //     ">=",
-    //     "<=",
-    //     "<>"
-    // };
+    char* compOpVocabGroup = "comparison operator";
+    int compOpVocabNum = 6;
+    char* compOpVocab[6] = {
+        "=",
+        ">",
+        "<",
+        ">=",
+        "<=",
+        "<>"
+    };
 
-    // myAutomaton = feedAutomaton(myAutomaton, compOpVocabGroup, compOpVocab, compOpVocabNum);
+    myAutomaton = feedAutomaton(myAutomaton, compOpVocabGroup, compOpVocab, compOpVocabNum);
 
     
 
@@ -217,16 +217,18 @@ int main() {
     // printf("File Name is  %s", fileName);
 
     automaton* myAutomaton = createAutomaton(myAutomaton);
+    automaton* temp = myAutomaton;
+    temp = temp->next;
 
     fflush(stdout);
 
-    printf("\n  %s", myAutomaton->vocabularyList->vocabWords[0]);
-    printf("\n  %s", myAutomaton->vocabularyList->vocabWords[1]);
-    printf("\n  %s", myAutomaton->vocabularyList->vocabWords[2]);
-    printf("\n  %s", myAutomaton->vocabularyList->vocabWords[3]);
-    printf("\n  %s", myAutomaton->vocabularyList->vocabWords[4]);
-    printf("\n  %s", myAutomaton->vocabularyList->vocabWords[5]);
-    printf("\n  %s", myAutomaton->vocabularyList->vocabWords[6]);
+    printf("\n  %s", temp->vocabularyList->vocabWords[0]);
+    printf("\n  %s", temp->vocabularyList->vocabWords[1]);
+    printf("\n  %s", temp->vocabularyList->vocabWords[2]);
+    // printf("\n  %s", temp->vocabularyList->vocabWords[3]);
+    // printf("\n  %s", temp->vocabularyList->vocabWords[4]);
+    // printf("\n  %s", temp->vocabularyList->vocabWords[5]);
+    // printf("\n  %s", temp->vocabularyList->vocabWords[6]);
 
     fflush(stdout);
 
