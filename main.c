@@ -7,6 +7,7 @@
 typedef struct vocabList {
     char* vocabGroup;
     char** vocabWords;
+    int wordCount;
 }vocabList;
 
 typedef struct automaton {
@@ -33,14 +34,21 @@ automaton* createNewNode(char* vocabsGroup, char** vocabs, int wordsNum) {
     } while (newNode->vocabularyList == NULL);
     
     newNode->vocabularyList->vocabGroup = vocabsGroup;
+
+    int wordCounter = 0;
     
-    // Initialize the array of char pointers --------------------------------
+    // Initialize the array of char pointers and count the number of words --------------------------------
     newNode->vocabularyList->vocabWords = malloc(wordsNum * sizeof(char *));
 
     for (int i = 0; i < wordsNum; i++) {
+        // This the count the number of words in the vocab
+        wordCounter++;
+        // Fill the array with words
         newNode->vocabularyList->vocabWords[i] = vocabs[i];
     }
     // ----------------------------------------------------
+
+    newNode->vocabularyList->wordCount = wordCounter;
 
     newNode->next = NULL;
 
@@ -84,25 +92,25 @@ automaton* createAutomaton(automaton* myAutomaton) {
     // There will be errors if you added more vocab without upping array's limit
     // Getting the number of rows and columns of a matrix would need much more work due to C limitations and since
     // it's out of scope I'm gonna just use a variable that should be equal to the number of words in the vocab
-    char* keywordsVocabGroup = "keyword";
-    int keywordsVocabNum = 7;
-    char* keywordsVocab[7] = {
+    char* vocabGroup;
+    int vocabNum;
+
+    vocabGroup = "keyword";
+    vocabNum = 6;
+    char* keywordsVocab[6] = {
         "select",
         "from",
         "where",
-        "order",
-        "by",
+        "orderby",
         "desc",
         "asc"
     };
 
-    myAutomaton = feedAutomaton(myAutomaton, keywordsVocabGroup, keywordsVocab, keywordsVocabNum);
+    myAutomaton = feedAutomaton(myAutomaton, vocabGroup, keywordsVocab, vocabNum);
 
-    fflush(stdin);
-    fflush(stdout);
 
-    char* compOpVocabGroup = "comparison operator";
-    int compOpVocabNum = 6;
+    vocabGroup = "comparison operator";
+    vocabNum = 6;
     char* compOpVocab[6] = {
         "=",
         ">",
@@ -112,9 +120,45 @@ automaton* createAutomaton(automaton* myAutomaton) {
         "<>"
     };
 
-    myAutomaton = feedAutomaton(myAutomaton, compOpVocabGroup, compOpVocab, compOpVocabNum);
+    myAutomaton = feedAutomaton(myAutomaton, vocabGroup, compOpVocab, vocabNum);
+
+
+    vocabGroup = "logical operator";
+    vocabNum = 10;
+    char* logicOpVocab[10] = {
+        "all",
+        "and",
+        "any",
+        "between",
+        "exists",
+        "in",
+        "like",
+        "not",
+        "or",
+        "some"
+    };
+
+    myAutomaton = feedAutomaton(myAutomaton, vocabGroup, logicOpVocab, vocabNum);
 
     
+    vocabGroup = "seperator";
+    vocabNum = 1;
+    char* seperatorVocab[1] = {
+        ","
+    };
+
+    myAutomaton = feedAutomaton(myAutomaton, vocabGroup, seperatorVocab, vocabNum);
+
+
+    vocabGroup = "property/value";
+    vocabNum = 3;
+    char* propValVocab[3] = {
+        "a",
+        "1",
+        "_"
+    };
+
+    myAutomaton = feedAutomaton(myAutomaton, vocabGroup, propValVocab, vocabNum); 
 
     return myAutomaton;
 }
@@ -207,6 +251,20 @@ char* readFileAndReturnText(char* fileName) {
 //     }
 // }
 
+void displayAutomaton(automaton* myAutomaton) {
+    automaton* temp = myAutomaton;
+
+    while (temp) {
+        printf("\n\n");
+
+        for (int i = 0; i < temp->vocabularyList->wordCount; i++) {
+            printf("%s  ", temp->vocabularyList->vocabWords[i]);
+        }
+
+        temp = temp->next;
+    }
+}
+
 int main() {
     char* fileName;
     printf("---------- Welcome ----------------");
@@ -217,20 +275,8 @@ int main() {
     // printf("File Name is  %s", fileName);
 
     automaton* myAutomaton = createAutomaton(myAutomaton);
-    automaton* temp = myAutomaton;
-    temp = temp->next;
-
-    fflush(stdout);
-
-    printf("\n  %s", temp->vocabularyList->vocabWords[0]);
-    printf("\n  %s", temp->vocabularyList->vocabWords[1]);
-    printf("\n  %s", temp->vocabularyList->vocabWords[2]);
-    // printf("\n  %s", temp->vocabularyList->vocabWords[3]);
-    // printf("\n  %s", temp->vocabularyList->vocabWords[4]);
-    // printf("\n  %s", temp->vocabularyList->vocabWords[5]);
-    // printf("\n  %s", temp->vocabularyList->vocabWords[6]);
-
-    fflush(stdout);
+    
+    displayAutomaton(myAutomaton);
 
     // char* fileText = readFileAndReturnText("testing-file.txt");
 
