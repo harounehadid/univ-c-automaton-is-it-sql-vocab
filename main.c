@@ -266,22 +266,17 @@ void displayAutomaton(automaton* myAutomaton) {
 }
 
 int main() {
-    char* fileName;
     printf("---------- Welcome ----------------");
-    printf("\nEnter the name of the file:  ");
-    
-    // I'll add this later ---------------------------
-    // scanf("%c", &fileName);
-    // printf("File Name is  %s", fileName);
 
     automaton* myAutomaton = createAutomaton(myAutomaton);
-    
-    displayAutomaton(myAutomaton);
 
-    // char* fileText = readFileAndReturnText("testing-file.txt");
+    char* inputFileName = "testing-file.txt";
+    // printf("\nEnter the name of the file:  ");
+    // I'll add this later ---------------------------
+    // scanf("%c", &fileName);
+    printf("\nInput file name is: %s", inputFileName);
 
-    // printf("\nFILE TEXT: %s", fileName);
-    // printf("\n");
+    char* fileText = readFileAndReturnText(inputFileName);
 
     printf("\n\n");
 
