@@ -151,10 +151,13 @@ automaton* createAutomaton(automaton* myAutomaton) {
 
 
     vocabGroup = "property/value";
-    vocabNum = 3;
-    char* propValVocab[3] = {
-        "a",
-        "1",
+    vocabNum = 63;
+    char* propValVocab[63] = {
+        "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
+        "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
+        "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
+        "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
+        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
         "_"
     };
 
@@ -222,16 +225,44 @@ char* checkAgainstAutomaton(automaton* chain, char* word) {
 
     char* wordInLowercase = getWordInAllLowercase(word);
 
-    for (int i = 0; i < temp->vocabularyList->wordCount; i++) {
-        char* curWord = temp->vocabularyList->vocabWords[i];
+    while (temp) {
+        for (int i = 0; i < temp->vocabularyList->wordCount; i++) {
+            // Check if the first character of a string is an integer, if it is than break out
+            if (isdigit(word[0])) break;
 
-        // printf("\ncurWord:  [%s]   word:  [%s]   ", curWord, word);
+            if (temp->vocabularyList->vocabGroup != "property/value") {
+                char* curWord = temp->vocabularyList->vocabWords[i];
 
-        // strcmp(curWord, wordInLowercase) == 0 ? printf("Match") : printf("Don't Match");
+                printf("\ncurWord:  [%s]   word:  [%s]   ", curWord, word);
 
-        if (strcmp(curWord, wordInLowercase) == 0) {
-            wordGroup = temp->vocabularyList->vocabGroup;
-            break;
+                strcmp(curWord, wordInLowercase) == 0 ? printf("Match") : printf("Don't Match");
+
+                if (strcmp(curWord, wordInLowercase) == 0) {
+                    wordGroup = temp->vocabularyList->vocabGroup;
+                    break;
+                }   
+            }
+            else {
+                // Check if it is property/value
+                char* pvStr;
+                char* pvCh;
+
+                do {
+                    pvStr = malloc(temp->vocabularyList->wordCount * sizeof(char*));
+
+                } while (pvStr == NULL);
+
+                pvStr[0] = '\0';
+
+                // for (int j = 0; j < temp->vocabularyList->wordCount; j++) {
+                //     pvCh = temp->vocabularyList->vocabWords[j][0];
+                //     strncat(pvStr, &pvCh, 1);
+                // }
+
+                for (int j = 0; j < strlen(word); j++) {
+
+                }
+            }
         }
 
         temp = temp->next;
@@ -251,19 +282,15 @@ void analyzeFilterAndOutput(automaton* chain, char* inputText, char* outputFileN
             strncat(word, &inputText[i], 1);
             i++;
 
-            // This to get the whole of "order by" instruction
+            // This to get the whole of "order by" keyword
             if (getWordInAllLowercase(word) == "order" && inputText[i] == ' ') i++;
         }
 
-        char* wordGroup;
+        // This shows the type of word, example Keyword or logical operator
+        char* wordGroup = checkAgainstAutomaton(chain, word);
 
-        if (!isdigit(word[0])) {
-            wordGroup = checkAgainstAutomaton(chain, word);
-        }
-        else {
-            // If the word starts with a digit than print Unknown
-            wordGroup = "Unknown";
-        }
+        // If the word is not recognized by the lexecal analyzer print "Unknown"
+        if (wordGroup == NULL) wordGroup = "Unknown";
         
         // print to the file
         fprintf(file, "%s(%s) ", word, wordGroup);
