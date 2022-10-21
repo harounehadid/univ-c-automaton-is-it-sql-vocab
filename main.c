@@ -86,7 +86,7 @@ automaton* feedAutomaton(automaton* myAutomaton, char* vocabsGroup, char* vocabs
 }
 
 automaton* createAutomaton(automaton* myAutomaton) {
-    printf("\nCreating automaton...\n");
+    printf("\n...Creating automaton\n");
     myAutomaton = NULL;
 
     // There will be errors if you added more vocab without upping array's limit
@@ -175,7 +175,7 @@ char* readFileAndReturnText(char* fileName) {
 
     if (file == NULL) printf("\nThe file can't be opened\n");
 
-    printf("\n\nChecking file...\n");
+    printf("\n\n...Checking file\n");
 
     // Count how many character in the file
     int charCount = 0;
@@ -213,15 +213,25 @@ char* readFileAndReturnText(char* fileName) {
 // Return a copy text into all lowercase
 char* getWordInAllLowercase(char* text) {
     char* textInLowercase = malloc(strlen(text) * sizeof(char));
+
     textInLowercase[0] = '\0';
-    for (int i = 0; i < strlen(text); i++) textInLowercase[i] = tolower(text[i]);
+    for (int i = 0; i < strlen(text); i++) {
+        if (isalpha(text[i]) != 0) {
+            textInLowercase[i] = tolower(text[i]);
+        }
+        else {
+            textInLowercase[i] = text[i];
+        }
+    }
 
     return textInLowercase;
 }
 
 char* checkAgainstAutomaton(automaton* chain, char* word) {
     automaton* temp = chain;
-    char* wordGroup = '\0';
+    char* wordGroup = NULL;
+
+    char* propValGroup = "property/value";
 
     char* wordInLowercase = getWordInAllLowercase(word);
 
@@ -230,22 +240,20 @@ char* checkAgainstAutomaton(automaton* chain, char* word) {
             // Check if the first character of a string is an integer, if it is than break out
             if (isdigit(word[0])) break;
 
-            if (temp->vocabularyList->vocabGroup != "property/value") {
+            if (temp->vocabularyList->vocabGroup != propValGroup) {
                 char* curWord = temp->vocabularyList->vocabWords[i];
 
-                printf("\ncurWord:  [%s]   word:  [%s]   ", curWord, word);
-
-                strcmp(curWord, wordInLowercase) == 0 ? printf("Match") : printf("Don't Match");
-
-                if (strcmp(curWord, wordInLowercase) == 0) {
+                if (strncmp(curWord, wordInLowercase, 1) == 0) {
                     wordGroup = temp->vocabularyList->vocabGroup;
                     break;
-                }   
+                }
             }
             else {
                 // Check if it is property/value
                 char* pvStr;
-                char* pvCh;
+                char pvCh;
+
+                wordGroup = temp->vocabularyList->vocabGroup;
 
                 do {
                     pvStr = malloc(temp->vocabularyList->wordCount * sizeof(char*));
@@ -254,16 +262,21 @@ char* checkAgainstAutomaton(automaton* chain, char* word) {
 
                 pvStr[0] = '\0';
 
-                // for (int j = 0; j < temp->vocabularyList->wordCount; j++) {
-                //     pvCh = temp->vocabularyList->vocabWords[j][0];
-                //     strncat(pvStr, &pvCh, 1);
-                // }
+                for (int j = 0; j < temp->vocabularyList->wordCount; j++) {
+                    pvCh = temp->vocabularyList->vocabWords[j][0];
+                    strncat(pvStr, &pvCh, 1);
+                }
 
                 for (int j = 0; j < strlen(word); j++) {
-
+                    if (strchr(pvStr, word[j]) == NULL) {
+                        wordGroup = NULL;
+                        break;
+                    }
                 }
             }
         }
+
+        if (wordGroup) break;
 
         temp = temp->next;
     }
@@ -273,6 +286,8 @@ char* checkAgainstAutomaton(automaton* chain, char* word) {
 
 // I could've made this function better but it's way too out of this project's scope
 void analyzeFilterAndOutput(automaton* chain, char* inputText, char* outputFileName) {
+    printf("\n...Checking with the Automaton\n");
+
     FILE* file = fopen(outputFileName, "w");
     
     for (int i = 0; i < strlen(inputText) - 1; i++) {
@@ -283,7 +298,25 @@ void analyzeFilterAndOutput(automaton* chain, char* inputText, char* outputFileN
             i++;
 
             // This to get the whole of "order by" keyword
-            if (getWordInAllLowercase(word) == "order" && inputText[i] == ' ') i++;
+            if (strcmp(getWordInAllLowercase(word), "order") == 0) {
+                if (word[i] == ' ') break;
+
+                char iPlus1Ch = inputText[i + 1];
+                char iPlus2Ch = inputText[i + 2];
+
+                // If still not the end of string check if it's a space
+                bool thirdPosInRange = i + 3 < strlen(inputText) - 1;
+
+                if (tolower(iPlus1Ch) == 'b' && tolower(iPlus2Ch) == 'y') {
+
+                    if (thirdPosInRange) {
+                        if (inputText[i + 3] != ' ') break;
+                    }
+
+                    strncat(word, &inputText[i], 1);
+                    i++;
+                }
+            }
         }
 
         // This shows the type of word, example Keyword or logical operator
@@ -332,7 +365,9 @@ int main() {
 
     analyzeFilterAndOutput(myAutomaton, fileText, outputFileName);
 
-    printf("\n\n");
+    printf("\nText analyzing is done you can check the output file");
+
+    printf("\n\n\n");
 
     return 0;
 }

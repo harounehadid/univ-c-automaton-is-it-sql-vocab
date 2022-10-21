@@ -1,1 +1,1 @@
-Select hello 34 <> not ... _hello
+Select hello 34 <> not ... _hello order by 
