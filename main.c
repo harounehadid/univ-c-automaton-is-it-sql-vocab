@@ -243,7 +243,7 @@ char* checkAgainstAutomaton(automaton* chain, char* word) {
             if (temp->vocabularyList->vocabGroup != propValGroup) {
                 char* curWord = temp->vocabularyList->vocabWords[i];
 
-                if (strncmp(curWord, wordInLowercase, 1) == 0) {
+                if (strcmp(curWord, wordInLowercase) == 0) {
                     wordGroup = temp->vocabularyList->vocabGroup;
                     break;
                 }
@@ -267,8 +267,8 @@ char* checkAgainstAutomaton(automaton* chain, char* word) {
                     strncat(pvStr, &pvCh, 1);
                 }
 
-                for (int j = 0; j < strlen(word); j++) {
-                    if (strchr(pvStr, word[j]) == NULL) {
+                for (int j = 0; j < strlen(wordInLowercase); j++) {
+                    if (strchr(pvStr, wordInLowercase[j]) == NULL) {
                         wordGroup = NULL;
                         break;
                     }
@@ -291,7 +291,7 @@ void analyzeFilterAndOutput(automaton* chain, char* inputText, char* outputFileN
     FILE* file = fopen(outputFileName, "w");
     
     for (int i = 0; i < strlen(inputText) - 1; i++) {
-        char word[50] = "";
+        char word[25] = "";
         
         while (inputText[i] != ' ' && i < strlen(inputText) - 1) {
             strncat(word, &inputText[i], 1);
@@ -314,6 +314,7 @@ void analyzeFilterAndOutput(automaton* chain, char* inputText, char* outputFileN
                     }
 
                     strncat(word, &inputText[i], 1);
+                    fflush(stdin);
                     i++;
                 }
             }
