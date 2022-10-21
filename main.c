@@ -255,10 +255,16 @@ void analyzeFilterAndOutput(automaton* chain, char* inputText, char* outputFileN
             if (getWordInAllLowercase(word) == "order" && inputText[i] == ' ') i++;
         }
 
-        // printf("\nWord: ");
+        char* wordGroup;
 
-        char* wordGroup = checkAgainstAutomaton(chain, word);
-
+        if (!isdigit(word[0])) {
+            wordGroup = checkAgainstAutomaton(chain, word);
+        }
+        else {
+            // If the word starts with a digit than print Unknown
+            wordGroup = "Unknown";
+        }
+        
         // print to the file
         fprintf(file, "%s(%s) ", word, wordGroup);
     }
