@@ -101,7 +101,7 @@ automaton* createAutomaton(automaton* myAutomaton) {
         "select",
         "from",
         "where",
-        "orderby",
+        "order by",
         "desc",
         "asc"
     };
@@ -207,49 +207,64 @@ char* readFileAndReturnText(char* fileName) {
     return str;
 }
 
-// bool checkAgainstAutomaton(automaton* chain, char* word) {
-//     bool isRecognizable = true;
-//     automaton* temp = chain;
-//     int automatonLength = getAutomatonLength(chain);
+// Return a copy text into all lowercase
+char* getWordInAllLowercase(char* text) {
+    char* textInLowercase = malloc(strlen(text) * sizeof(char));
+    textInLowercase[0] = '\0';
+    for (int i = 0; i < strlen(text); i++) textInLowercase[i] = tolower(text[i]);
 
-//     // The -1 is added because the final state doesn't have a transition, I made '-' to indicate no transition exists
-//     if (strlen(word) == automatonLength - 1) {
-//         for (int i = 0; i < strlen(word); i++) {
-//             if (word[i] != temp->transition || temp == NULL) {
-//                 isRecognizable = false;
-//                 break;
-//             }
+    return textInLowercase;
+}
 
-//             temp = temp->next;
-//         }
-//     }
-//     else {
-//         isRecognizable = false;
-//     }
+char* checkAgainstAutomaton(automaton* chain, char* word) {
+    automaton* temp = chain;
+    char* wordGroup = '\0';
 
-//     return isRecognizable;
-// }
+    char* wordInLowercase = getWordInAllLowercase(word);
+
+    for (int i = 0; i < temp->vocabularyList->wordCount; i++) {
+        char* curWord = temp->vocabularyList->vocabWords[i];
+
+        // printf("\ncurWord:  [%s]   word:  [%s]   ", curWord, word);
+
+        // strcmp(curWord, wordInLowercase) == 0 ? printf("Match") : printf("Don't Match");
+
+        if (strcmp(curWord, wordInLowercase) == 0) {
+            wordGroup = temp->vocabularyList->vocabGroup;
+            break;
+        }
+
+        temp = temp->next;
+    }
+
+    return wordGroup;
+}
 
 // I could've made this function better but it's way too out of this project's scope
-// void analyzeAndFilter(automaton* chain, char* text) {
-//     bool isRecognizable;
+void analyzeFilterAndOutput(automaton* chain, char* inputText, char* outputFileName) {
+    FILE* file = fopen(outputFileName, "w");
     
-//     for (int i = 0; i < strlen(text) - 1; i++) {
-//         char word[50] = "";
+    for (int i = 0; i < strlen(inputText) - 1; i++) {
+        char word[50] = "";
         
-//         while (text[i] != ' ' && i < strlen(text) - 1) {
-//             strncat(word, &text[i], 1);
-//             i++;
-//         }
+        while (inputText[i] != ' ' && i < strlen(inputText) - 1) {
+            strncat(word, &inputText[i], 1);
+            i++;
 
-//         printf("\nWord: %s", word);
+            // This to get the whole of "order by" instruction
+            if (getWordInAllLowercase(word) == "order" && inputText[i] == ' ') i++;
+        }
 
-//         isRecognizable = checkAgainstAutomaton(chain, word);
+        // printf("\nWord: ");
 
-//         // Here dipaly the recognized and non recognized words
-//         printf(isRecognizable ? "  Recognized" : "  Lexical Error");
-//     }
-// }
+        char* wordGroup = checkAgainstAutomaton(chain, word);
+
+        // print to the file
+        fprintf(file, "%s(%s) ", word, wordGroup);
+    }
+
+    fclose(file);
+}
 
 void displayAutomaton(automaton* myAutomaton) {
     automaton* temp = myAutomaton;
@@ -266,17 +281,23 @@ void displayAutomaton(automaton* myAutomaton) {
 }
 
 int main() {
-    printf("---------- Welcome ----------------");
+    printf("\n---------- Welcome ----------------\n");
 
     automaton* myAutomaton = createAutomaton(myAutomaton);
 
-    char* inputFileName = "testing-file.txt";
-    // printf("\nEnter the name of the file:  ");
-    // I'll add this later ---------------------------
-    // scanf("%c", &fileName);
+    // You can give the user the option to enter the name of the input and output file
+    char* inputFileName = "input-file.txt";
+    char* outputFileName = "output-file.txt";
+
     printf("\nInput file name is: %s", inputFileName);
+    printf("\nOutput file name is: %s", outputFileName);
 
     char* fileText = readFileAndReturnText(inputFileName);
+
+    printf("\nFile text: %s", fileText);
+    printf("\n");
+
+    analyzeFilterAndOutput(myAutomaton, fileText, outputFileName);
 
     printf("\n\n");
 
