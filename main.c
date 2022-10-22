@@ -214,8 +214,6 @@ bool compareStrings(char* str1, char* str2) {
     bool same = true;
     int str1Len = strlen(str1);
     int str2Len = strlen(str2);
-
-    printf("\nstr1 = %s     str2 = %s", str1, str2);
     
     if (str1Len == str2Len) {
         for (int i = 0; i < str1Len; i++) {
@@ -228,8 +226,6 @@ bool compareStrings(char* str1, char* str2) {
     else {
         same = false;
     }
-
-    same ? printf("\nTrue") : printf("\nFalse");
     
     return same;
 }
@@ -254,19 +250,15 @@ char* checkAgainstAutomaton(automaton* chain, char* word) {
 
     char* propValGroup = "property/value";
 
-    printf("\nWord in before lowercase:  %s", word);
-
     char* wordInLowercase = getWordInAllLowercase(word);
 
     while (temp) {
         for (int i = 0; i < temp->vocabularyList->wordCount; i++) {
             // Check if the first character of a string is an integer, if it is than break out
-            if (strlen(word) == 0 || isdigit(word[0])) break;
+            if (strlen(word) == 0 || word[0] == '\n' || word[0] == '\t' || isdigit(word[0])) break;
 
             if (temp->vocabularyList->vocabGroup != propValGroup) {
                 char* curWord = temp->vocabularyList->vocabWords[i];
-
-                printf("\nWORD HEREEEEE:  %s", wordInLowercase);
 
                 if (compareStrings(curWord, wordInLowercase)) {
                     wordGroup = temp->vocabularyList->vocabGroup;
@@ -350,9 +342,7 @@ void analyzeFilterAndOutput(automaton* chain, char* inputText, char* outputFileN
         if (wordGroup == NULL) wordGroup = "Unknown";
         
         // print to the file exclude spaces
-        printf("\nword:  {%s}", word);
-        printf("\n------------------------------------");
-        if (strlen(word) > 0) fprintf(file, "%s(%s) ", word, wordGroup);
+        if (strlen(word) > 0 && word[0] != '\n' && word[0] != '\t') fprintf(file, "%s(%s) ", word, wordGroup);
     }
 
     fclose(file);

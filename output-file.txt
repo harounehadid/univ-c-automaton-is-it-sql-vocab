@@ -1,2 +1,0 @@
-Select(keyword) hello(property/value) 34(Unknown) <>(comparison operator) not(logical operator) ...(Unknown) _hello(property/value) order by(keyword) o(property/value) 
-(Unknown) 
