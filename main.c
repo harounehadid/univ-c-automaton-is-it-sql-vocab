@@ -210,18 +210,39 @@ char* readFileAndReturnText(char* fileName) {
     return str;
 }
 
+bool compareStrings(char* str1, char* str2) {
+    bool same = true;
+    int str1Len = strlen(str1);
+    int str2Len = strlen(str2);
+
+    printf("\nstr1 = %s     str2 = %s", str1, str2);
+    
+    if (str1Len == str2Len) {
+        for (int i = 0; i < str1Len; i++) {
+            if (str1[i] != str2[i]) {
+                same = false;
+                break;
+            }
+        }
+    }
+    else {
+        same = false;
+    }
+
+    same ? printf("\nTrue") : printf("\nFalse");
+    
+    return same;
+}
+
 // Return a copy text into all lowercase
 char* getWordInAllLowercase(char* text) {
-    char* textInLowercase = malloc(strlen(text) * sizeof(char));
-
+    // Text length should be strlen(text) + 1 because strlen doesn't account for the null at the end of the string
+    int textLen = strlen(text) + 1;
+    char* textInLowercase = malloc(textLen * sizeof(char));
     textInLowercase[0] = '\0';
-    for (int i = 0; i < strlen(text); i++) {
-        if (isalpha(text[i]) != 0) {
-            textInLowercase[i] = tolower(text[i]);
-        }
-        else {
-            textInLowercase[i] = text[i];
-        }
+
+    for (int i = 0; i < textLen; i++) {
+        textInLowercase[i] = tolower(text[i]);
     }
 
     return textInLowercase;
@@ -233,17 +254,21 @@ char* checkAgainstAutomaton(automaton* chain, char* word) {
 
     char* propValGroup = "property/value";
 
+    printf("\nWord in before lowercase:  %s", word);
+
     char* wordInLowercase = getWordInAllLowercase(word);
 
     while (temp) {
         for (int i = 0; i < temp->vocabularyList->wordCount; i++) {
             // Check if the first character of a string is an integer, if it is than break out
-            if (isdigit(word[0])) break;
+            if (strlen(word) == 0 || isdigit(word[0])) break;
 
             if (temp->vocabularyList->vocabGroup != propValGroup) {
                 char* curWord = temp->vocabularyList->vocabWords[i];
 
-                if (strcmp(curWord, wordInLowercase) == 0) {
+                printf("\nWORD HEREEEEE:  %s", wordInLowercase);
+
+                if (compareStrings(curWord, wordInLowercase)) {
                     wordGroup = temp->vocabularyList->vocabGroup;
                     break;
                 }
@@ -255,7 +280,7 @@ char* checkAgainstAutomaton(automaton* chain, char* word) {
                 int counter = 0;
 
                 do {
-                    pvStr = malloc(temp->vocabularyList->wordCount * sizeof(char*));
+                    pvStr = malloc(temp->vocabularyList->wordCount * sizeof(char));
 
                 } while (pvStr == NULL);
 
@@ -297,7 +322,7 @@ void analyzeFilterAndOutput(automaton* chain, char* inputText, char* outputFileN
 
             // This to get the whole of "order by" keyword
             if (strcmp(getWordInAllLowercase(word), "order") == 0) {
-                if (word[i] == ' ') break;
+                if (isspace(word[i]) != 0) break;
 
                 char iPlus1Ch = inputText[i + 1];
                 char iPlus2Ch = inputText[i + 2];
@@ -325,6 +350,8 @@ void analyzeFilterAndOutput(automaton* chain, char* inputText, char* outputFileN
         if (wordGroup == NULL) wordGroup = "Unknown";
         
         // print to the file exclude spaces
+        printf("\nword:  {%s}", word);
+        printf("\n------------------------------------");
         if (strlen(word) > 0) fprintf(file, "%s(%s) ", word, wordGroup);
     }
 
