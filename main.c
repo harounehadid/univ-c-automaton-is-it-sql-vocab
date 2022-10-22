@@ -252,8 +252,7 @@ char* checkAgainstAutomaton(automaton* chain, char* word) {
                 // Check if it is property/value
                 char* pvStr;
                 char pvCh;
-
-                wordGroup = temp->vocabularyList->vocabGroup;
+                int counter = 0;
 
                 do {
                     pvStr = malloc(temp->vocabularyList->wordCount * sizeof(char*));
@@ -268,11 +267,10 @@ char* checkAgainstAutomaton(automaton* chain, char* word) {
                 }
 
                 for (int j = 0; j < strlen(wordInLowercase); j++) {
-                    if (strchr(pvStr, wordInLowercase[j]) == NULL) {
-                        wordGroup = NULL;
-                        break;
-                    }
+                    if (strchr(pvStr, wordInLowercase[j]) != NULL) counter++;
                 }
+
+                if (counter != 0 && counter == strlen(wordInLowercase)) wordGroup = temp->vocabularyList->vocabGroup;
             }
         }
 
