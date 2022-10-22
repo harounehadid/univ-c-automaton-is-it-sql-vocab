@@ -324,8 +324,8 @@ void analyzeFilterAndOutput(automaton* chain, char* inputText, char* outputFileN
         // If the word is not recognized by the lexecal analyzer print "Unknown"
         if (wordGroup == NULL) wordGroup = "Unknown";
         
-        // print to the file
-        fprintf(file, "%s(%s) ", word, wordGroup);
+        // print to the file exclude spaces
+        if (strlen(word) > 0) fprintf(file, "%s(%s) ", word, wordGroup);
     }
 
     fclose(file);
